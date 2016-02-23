@@ -3,6 +3,7 @@ traffic control daemon
 
 ## Try it out
 
+* Download tcd with `go get github.com/kinvolk/tcd`
 * Compile with `./build.sh`
 * Install the D-Bus system policy with `sudo ./install.sh`
 * Start `tcd` with `sudo ./bin/tcd`
