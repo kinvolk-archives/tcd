@@ -16,12 +16,17 @@ package tcd
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 
 	"github.com/appc/cni/pkg/ns"
 	"github.com/godbus/dbus"
 	"github.com/godbus/dbus/introspect"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+
+	"github.com/kinvolk/tcd/api"
 )
 
 const intro = `
@@ -46,9 +51,17 @@ const intro = `
 
 const selfNetNS = "/proc/self/ns/net"
 
+// TCDDBus implements tcdapi.TcdServiceServer interface.
 type TCDDBus struct {
 	conn  *dbus.Conn
 	store *NetNSStore
+}
+
+var _ tcdapi.TcdServiceServer = &TCDDBus{}
+
+func (t TCDDBus) InstallMethod(ctx context.Context, request *tcdapi.InstallRequest) (*tcdapi.InstallResponse, error) {
+	t.Install(request.Container)
+	return &tcdapi.InstallResponse{}, nil
 }
 
 func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
@@ -66,6 +79,15 @@ func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
 	conn.Export(introspect.Introspectable(intro), "/com/github/kinvolk/tcd",
 		"org.freedesktop.DBus.Introspectable")
 
+	tcpl, err := net.Listen("tcp", "localhost:2049")
+	if err != nil {
+		return nil, err
+	}
+
+	publicServer := grpc.NewServer()
+	tcdapi.RegisterTcdServiceServer(publicServer, t)
+
+	go publicServer.Serve(tcpl)
 	return t, nil
 }
 
