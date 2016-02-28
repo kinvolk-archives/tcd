@@ -7,6 +7,10 @@ dependencies:
     - go build
     - docker build -t kinvolk/tcd .
 
+test:
+  override:
+    - echo "Tests disabled"
+
 deployment:
   privatehub:
     branch: /.*master/
