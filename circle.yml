@@ -1,0 +1,19 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - go build
+    - docker build -t kinvolk/tcd .
+
+deployment:
+  privatehub:
+    branch: /.*master/
+    commands:
+      - >
+        test "$DEPLOY_PRIVATE_HUB_BRANCH" == "" || test "$CIRCLE_BRANCH" != "$DEPLOY_PRIVATE_HUB_BRANCH" || (
+          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS &&
+          docker tag kinvolk/tcd:latest $DOCKER_USER/tcd:latest &&
+          docker push $DOCKER_USER/tcd
+        )

@@ -1,0 +1,33 @@
+# Kubernetes DaemonSet for tcd
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: tcd
+  labels:
+    k8s-app: tcd
+spec:
+  template:
+    metadata:
+      name:  tcd
+      labels:
+        k8s-app: tcd
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+      - name:  tcd
+        image: albanc/tcd:latest
+        args:
+        - --dbus
+        securityContext:
+          privileged: true
+        resources:
+          limits:
+            cpu: 50m
+        volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
