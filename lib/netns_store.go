@@ -16,13 +16,17 @@ package tcd
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
+	"github.com/fsouza/go-dockerclient"
 	"github.com/godbus/dbus"
 )
 
 type NetNSStore struct {
 	conn           *dbus.Conn
 	machineManager dbus.BusObject
+	dockerClient   *docker.Client
 
 	// Use a separate D-Bus connection to receive signals from
 	// systemd-machined. See limitations on
@@ -47,6 +51,11 @@ func NewNetNSStore(conn *dbus.Conn) (*NetNSStore, error) {
 
 	var listMachines []machinedMachine
 	err := s.machineManager.Call("org.freedesktop.machine1.Manager.ListMachines", 0).Store(&listMachines)
+	if err != nil {
+		return nil, err
+	}
+
+	s.dockerClient, err = docker.NewClientFromEnv()
 	if err != nil {
 		return nil, err
 	}
@@ -89,6 +98,18 @@ func (s NetNSStore) serveUpdates() {
 }
 
 func (s NetNSStore) getLeaderFromContainer(container string) (uint32, error) {
+	if strings.HasPrefix(container, "pid:") {
+		pid, err := strconv.ParseUint(strings.TrimPrefix(container, "pid:"), 10, 32)
+		return uint32(pid), err
+	}
+	if strings.HasPrefix(container, "docker:") {
+		dockerContainer, err := s.dockerClient.InspectContainer(strings.TrimPrefix(container, "docker:"))
+		if err != nil {
+			return 0, err
+		}
+		return uint32(dockerContainer.State.Pid), nil
+	}
+
 	var machineObjPath dbus.ObjectPath
 
 	err := s.machineManager.Call("org.freedesktop.machine1.Manager.GetMachine", 0, container).Store(&machineObjPath)
