@@ -79,7 +79,8 @@ func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
 	conn.Export(introspect.Introspectable(intro), "/com/github/kinvolk/tcd",
 		"org.freedesktop.DBus.Introspectable")
 
-	tcpl, err := net.Listen("tcp", "localhost:2049")
+	// FIXME: don't listen on 0.0.0.0
+	tcpl, err := net.Listen("tcp", "0.0.0.0:2049")
 	if err != nil {
 		return nil, err
 	}
