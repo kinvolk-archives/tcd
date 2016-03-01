@@ -1,10 +1,13 @@
 machine:
   services:
     - docker
+  environment:
+    CGO_ENABLED: 0
 
 dependencies:
   override:
-    - go build
+    - go get -d
+    - go build -o bin/tcd -installsuffix cgo
     - docker build -t kinvolk/tcd .
 
 test:
