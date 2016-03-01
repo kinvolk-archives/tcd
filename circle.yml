@@ -16,11 +16,11 @@ test:
 
 deployment:
   privatehub:
-    branch: /.*master/
+    branch: master
     commands:
       - >
-        test "$DEPLOY_PRIVATE_HUB_BRANCH" == "" || test "$CIRCLE_BRANCH" != "$DEPLOY_PRIVATE_HUB_BRANCH" || (
+        test -z "${DOCKER_USER}" || (
           docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS &&
-          docker tag kinvolk/tcd:latest $DOCKER_USER/tcd:latest &&
-          docker push $DOCKER_USER/tcd
+          (test "${DOCKER_ORGANIZATION:-$DOCKER_USER}" == "kinvolk" || docker tag kinvolk/tcd:latest ${DOCKER_ORGANIZATION:-$DOCKER_USER}/tcd:latest) &&
+          docker push ${DOCKER_ORGANIZATION:-$DOCKER_USER}/tcd
         )
