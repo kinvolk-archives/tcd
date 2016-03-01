@@ -45,11 +45,8 @@ func main() {
 		dbus.NameFlagDoNotQueue)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "cannot claim name on system bus: %v\n", err)
-		os.Exit(1)
-	}
-	if reply != dbus.RequestNameReplyPrimaryOwner {
+	} else if reply != dbus.RequestNameReplyPrimaryOwner {
 		fmt.Fprintln(os.Stderr, "name already taken")
-		os.Exit(1)
 	}
 
 	select {}

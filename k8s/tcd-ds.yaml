@@ -17,8 +17,6 @@ spec:
       containers:
       - name:  tcd
         image: albanc/tcd:latest
-        args:
-        - --dbus
         securityContext:
           privileged: true
         resources:
@@ -27,7 +25,12 @@ spec:
         volumeMounts:
         - name: docker-sock
           mountPath: /var/run/docker.sock
+        - name: dbus-sock
+          mountPath: /var/run/dbus/system_bus_socket
       volumes:
       - name: docker-sock
         hostPath:
           path: /var/run/docker.sock
+      - name: dbus-sock
+        hostPath:
+          path: /var/run/dbus/system_bus_socket
