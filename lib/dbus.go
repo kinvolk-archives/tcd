@@ -64,6 +64,16 @@ func (t TCDDBus) InstallMethod(ctx context.Context, request *tcdapi.InstallReque
 	return &tcdapi.InstallResponse{}, nil
 }
 
+func (t TCDDBus) ConfigureIngressMethod(ctx context.Context, request *tcdapi.ConfigureRequest) (*tcdapi.ConfigureResponse, error) {
+	t.ConfigureIngress(request.Container, request.Delay, request.Loss, request.Rate)
+	return &tcdapi.ConfigureResponse{}, nil
+}
+
+func (t TCDDBus) ConfigureEgressMethod(ctx context.Context, request *tcdapi.ConfigureRequest) (*tcdapi.ConfigureResponse, error) {
+	t.ConfigureEgress(request.Container, request.Delay, request.Loss, request.Rate)
+	return &tcdapi.ConfigureResponse{}, nil
+}
+
 func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
 	var err error
 
