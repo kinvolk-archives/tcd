@@ -89,8 +89,7 @@ func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
 	conn.Export(introspect.Introspectable(intro), "/com/github/kinvolk/tcd",
 		"org.freedesktop.DBus.Introspectable")
 
-	// FIXME: don't listen on 0.0.0.0
-	tcpl, err := net.Listen("tcp", "0.0.0.0:2049")
+	l, err := net.Listen("unix", "/run/tcd/tcd.sock")
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +97,7 @@ func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
 	publicServer := grpc.NewServer()
 	tcdapi.RegisterTcdServiceServer(publicServer, t)
 
-	go publicServer.Serve(tcpl)
+	go publicServer.Serve(l)
 	return t, nil
 }
 

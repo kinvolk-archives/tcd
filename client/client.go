@@ -18,7 +18,9 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
+	"time"
 
 	"github.com/kinvolk/tcd/api"
 	"golang.org/x/net/context"
@@ -31,7 +33,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	conn, err := grpc.Dial(os.Args[1], grpc.WithInsecure())
+	conn, err := grpc.Dial(os.Args[1],
+		grpc.WithDialer(func(addr string, timeout time.Duration) (net.Conn, error) {
+			unixAddr, _ := net.ResolveUnixAddr("unix", addr)
+			return net.DialUnix("unix", nil, unixAddr)
+		}),
+		grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

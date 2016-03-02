@@ -27,6 +27,19 @@ var conn *dbus.Conn
 
 func main() {
 	var err error
+
+	os.MkdirAll("/run/tcd", 0700)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "cannot mkdir /run/tcd: %v\n", err)
+		os.Exit(1)
+	}
+
+	os.Remove("/run/tcd/tcd.sock")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "cannot remove /run/tcd/tcd.sock: %v\n", err)
+		os.Exit(1)
+	}
+
 	conn, err = dbus.SystemBus()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "cannot connect to system bus: %v\n", err)

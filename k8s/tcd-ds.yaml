@@ -27,6 +27,8 @@ spec:
           mountPath: /var/run/docker.sock
         - name: dbus-sock
           mountPath: /var/run/dbus/system_bus_socket
+        - name: run
+          mountPath: /run
       volumes:
       - name: docker-sock
         hostPath:
@@ -34,3 +36,6 @@ spec:
       - name: dbus-sock
         hostPath:
           path: /var/run/dbus/system_bus_socket
+      - name: run
+        hostPath:
+          path: /run
