@@ -1,4 +1,4 @@
-FROM scratch
+FROM ubuntu
 MAINTAINER Alban Crequy <alban@kinvolk.io>
 ADD bin/tcd /tcd
 # ADD bin/tcdclient /tcdclient
