@@ -85,18 +85,22 @@ func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
 		return nil, err
 	}
 
+	fmt.Printf("Exporting D-Bus service...\n")
 	conn.Export(t, "/com/github/kinvolk/tcd", "com.github.kinvolk.tcd")
 	conn.Export(introspect.Introspectable(intro), "/com/github/kinvolk/tcd",
 		"org.freedesktop.DBus.Introspectable")
 
+	fmt.Printf("Listening on socket...\n")
 	l, err := net.Listen("unix", "/run/tcd/tcd.sock")
 	if err != nil {
 		return nil, err
 	}
 
+	fmt.Printf("Creating grpc server...\n")
 	publicServer := grpc.NewServer()
 	tcdapi.RegisterTcdServiceServer(publicServer, t)
 
+	fmt.Printf("Serving grpc server...\n")
 	go publicServer.Serve(l)
 	return t, nil
 }
