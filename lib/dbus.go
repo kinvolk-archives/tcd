@@ -108,8 +108,10 @@ func NewTCD(conn *dbus.Conn) (*TCDDBus, error) {
 func (t TCDDBus) runCmds(container string, cmds []string) *dbus.Error {
 	leader, err := t.store.getLeaderFromContainer(container)
 	if err != nil {
+		fmt.Printf("Error: cannot get container: %q: %v\n", container, err)
 		return dbus.NewError("com.github.kinvolk.tcd.PIDNotFound", nil)
 	}
+	fmt.Printf("container %q has leader %d\n", container, leader)
 
 	err = ns.WithNetNSPath(fmt.Sprintf("/proc/%d/ns/net", leader), true, func(hostNS *os.File) error {
 		for _, cmd := range cmds {
@@ -123,6 +125,7 @@ func (t TCDDBus) runCmds(container string, cmds []string) *dbus.Error {
 		return nil
 	})
 	if err != nil {
+		fmt.Printf("Could not run command: %v\n", err)
 		return dbus.NewError("com.github.kinvolk.tcd.ExecError", nil)
 	}
 

@@ -10,6 +10,8 @@ dependencies:
     - go build -o bin/tcd -installsuffix cgo
     #- go build -o bin/tcdclient client/client.go
     - docker build -t kinvolk/tcd .
+  post:
+    - rm -r ~/.gradle
 
 test:
   override:
