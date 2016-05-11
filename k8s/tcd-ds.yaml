@@ -16,7 +16,7 @@ spec:
       hostNetwork: true
       containers:
       - name:  tcd
-        image: albanc/tcd:latest
+        image: albanc/tcd:demo1
         securityContext:
           privileged: true
         resources:
