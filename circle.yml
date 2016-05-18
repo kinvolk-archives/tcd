@@ -6,10 +6,7 @@ machine:
 
 dependencies:
   override:
-    - go get -d
-    - go build -o bin/tcd -installsuffix cgo
-    #- go build -o bin/tcdclient client/client.go
-    - docker build -t kinvolk/tcd .
+    - ./build.sh
   post:
     - rm -r ~/.gradle
 
