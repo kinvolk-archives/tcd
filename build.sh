@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# This script is a modification of the build for docke2aci
+# This script is a modification of the build for docker2aci
 # https://github.com/appc/docker2aci/blob/master/build.sh
 
 
