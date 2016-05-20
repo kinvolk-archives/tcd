@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+set -e
 
 # This script is a modification of the build for docker2aci
 # https://github.com/appc/docker2aci/blob/master/build.sh
 
-set -e
 
 ORG_PATH="github.com/kinvolk"
 REPO_PATH="${ORG_PATH}/tcd"
@@ -14,10 +14,9 @@ if [ ! -h gopath/src/${REPO_PATH} ]; then
 fi
 
 export GOBIN=${PWD}/bin
-export GOPATH=${PWD}/gopath:${PWD}/Godeps/_workspace
+export GOPATH=${PWD}/gopath:${PWD}/vendor
 
 eval $(go env)
-go get -d # This will be substituted by vendoring
 
 echo "Building tcd..."
 # ~/programs/protoc/protoc -I api api/service.proto --go_out=plugins=grpc:api
