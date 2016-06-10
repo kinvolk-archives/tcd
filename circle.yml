@@ -15,13 +15,21 @@ test:
     - echo "Tests disabled"
 
 deployment:
-  privatehub:
+  hub:
     branch: master
     commands:
       - >
         test -z "${DOCKER_USER}" || (
           docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS &&
           (test "${DOCKER_ORGANIZATION:-$DOCKER_USER}" == "kinvolk" || docker tag kinvolk/tcd:latest ${DOCKER_ORGANIZATION:-$DOCKER_USER}/tcd:latest) &&
-          docker push ${DOCKER_ORGANIZATION:-$DOCKER_USER}/tcd &&
-          docker images
+          docker push ${DOCKER_ORGANIZATION:-$DOCKER_USER}/tcd
+        )
+  hub-dev:
+    branch: /^((?!master).)*$/  # not the master branch
+    commands:
+      - >
+        test -z "${DEPLOY_BRANCH}" || test -z "${DOCKER_USER}" || (
+          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS &&
+          docker tag kinvolk/tcd:latest ${DOCKER_ORGANIZATION:-$DOCKER_USER}/tcd:${CIRCLE_BRANCH//\//-} &&
+          docker push ${DOCKER_ORGANIZATION:-$DOCKER_USER}/tcd:${CIRCLE_BRANCH//\//-}
         )
