@@ -15,6 +15,8 @@ find_git_branch() {
 
 find_git_branch
 
+echo 1 | sudo tee /proc/sys/net/core/bpf_jit_enable
+
 sudo docker run \
 	--rm \
 	--privileged \
@@ -24,6 +26,8 @@ sudo docker run \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-v /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket \
 	-v /run:/run \
+	-v /sys/fs/bpf:/sys/fs/bpf \
+	-v $HOME/git/iproute2/examples/bpf/bpf_shared.o:/bpf_shared.o \
 	docker.io/$DOCKER_USER/tcd${DOCKER_TAG} \
 	/tcd
 

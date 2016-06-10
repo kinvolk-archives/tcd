@@ -37,6 +37,7 @@ message ConfigureResponse {
 
 service TcdService {
   rpc InstallMethod(InstallRequest) returns (InstallResponse) {}
+  rpc TestingMethod(InstallRequest) returns (InstallResponse) {}
   rpc ConfigureIngressMethod(ConfigureRequest) returns (ConfigureResponse) {}
   rpc ConfigureEgressMethod(ConfigureRequest) returns (ConfigureResponse) {}
 }

@@ -35,6 +35,9 @@ const intro = `
 		<method name="Install">
 			<arg name="container" direction="in" type="s"/>
 		</method>
+		<method name="Testing">
+			<arg name="container" direction="in" type="s"/>
+		</method>
 		<method name="ConfigureIngress">
 			<arg name="container" direction="in" type="s"/>
 			<arg name="delay" direction="in" type="u"/>
@@ -61,6 +64,11 @@ var _ tcdapi.TcdServiceServer = &TCDDBus{}
 
 func (t TCDDBus) InstallMethod(ctx context.Context, request *tcdapi.InstallRequest) (*tcdapi.InstallResponse, error) {
 	t.Install(request.Container)
+	return &tcdapi.InstallResponse{}, nil
+}
+
+func (t TCDDBus) TestingMethod(ctx context.Context, request *tcdapi.InstallRequest) (*tcdapi.InstallResponse, error) {
+	t.Testing(request.Container)
 	return &tcdapi.InstallResponse{}, nil
 }
 
@@ -141,6 +149,31 @@ func (t TCDDBus) Install(container string) *dbus.Error {
 		"tc filter add dev eth0 parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev ifb0",
 		"tc qdisc replace dev ifb0 handle 1:0 root netem",
 	}
+	return t.runCmds(container, cmds)
+}
+
+func (t TCDDBus) Testing(container string) *dbus.Error {
+	cmds := []string{"/run/tcd/tc.sh"}
+	/*
+		cmds := []string{
+			"tc qdisc del dev eth0 root",
+			"tc -s -d qdisc show dev eth0",
+
+			"tc qdisc add dev eth0 handle 1:0 root htb r2q 2",
+
+			"tc class add dev eth0 parent 1:0 classid 1:1 htb",
+			"tc qdisc add dev eth0 handle 2:0 parent 1:1 netem",
+
+			"tc class add dev eth0 parent 1:0 classid 1:2 htb",
+			"tc qdisc add dev eth0 handle 3:0 parent 1:2 netem",
+
+			"tc class add dev eth0 parent 1:0 classid 1:3 htb",
+			"tc qdisc add dev eth0 handle 4:0 parent 1:3 netem",
+
+			"tc filter replace dev eth0 parent 1: bpf obj bpf_shared.o sec egress verbose",
+			"tc filter replace dev eth0 parent ffff: bpf obj bpf_shared.o sec ingress verbose",
+		}
+	*/
 	return t.runCmds(container, cmds)
 }
 
