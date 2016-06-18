@@ -17,6 +17,10 @@ find_git_branch
 
 echo 1 | sudo tee /proc/sys/net/core/bpf_jit_enable
 
+if [ "$1" = "new" ] ; then
+	PARAMS="-v $PWD/ebpf/bpf_shared.o:/bpf_shared.o"
+fi
+
 sudo docker run \
 	--rm \
 	--privileged \
@@ -27,7 +31,7 @@ sudo docker run \
 	-v /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket \
 	-v /run:/run \
 	-v /sys/fs/bpf:/sys/fs/bpf \
-	-v $HOME/git/iproute2/examples/bpf/bpf_shared.o:/bpf_shared.o \
+	$PARAMS \
 	docker.io/$DOCKER_USER/tcd${DOCKER_TAG} \
 	/tcd
 

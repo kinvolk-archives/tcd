@@ -22,4 +22,7 @@ echo "Building tcd..."
 # ~/programs/protoc/protoc -I api api/service.proto --go_out=plugins=grpc:api
 CGO_ENABLE=0 go build -o $GOBIN/tcd -installsuffix cgo
 
+echo "Building eBPF code..."
+(cd ebpf && ./build-in-docker.sh)
+
 sudo docker build -t kinvolk/tcd .
